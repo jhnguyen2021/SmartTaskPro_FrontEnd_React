@@ -1,26 +1,34 @@
-import axios from 'axios';
+// src/lib/api.ts
+import axios, { AxiosError } from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  withCredentials: true,
+  // Prefer env, else default to /api so Vite proxy (dev) and same-origin (prod) both work
+  baseURL: '/api',
+  withCredentials: false, // set to false if you don't use cookies
+  timeout: 15000,
+  headers: {
+    Accept: 'application/json',
+  },
 });
 
-//Ensures cookies, sessions, and credentials (like SameSite=None) are sent with cross-site requests.
-
+// Attach Bearer token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token');
   if (token) {
     config.headers = config.headers ?? {};
-    config.headers['Authorization'] = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
+// Centralized error handling
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    // handle 401/403 globally if needed
-    return Promise.reject(err);
+  (error: AxiosError) => {
+    // Example global handling:
+    // if (error.response?.status === 401) { /* logout or redirect to /login */ }
+    // if (error.code === 'ECONNABORTED') { /* request timeout */ }
+    return Promise.reject(error);
   }
 );
 

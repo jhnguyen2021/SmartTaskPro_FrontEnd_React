@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
+import api from './lib/axios';
+
 import './App.css';
 
 function App() {
   const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    api
+      .get('/projects')
+      .then((res) => console.log('✅ Backend says:', res.data))
+      .catch((err) => console.error('❌ API error:', err));
+  }, []);
 
   return (
     <>

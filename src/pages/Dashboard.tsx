@@ -1,3 +1,5 @@
+//import HealthCheck from '../components/HealthCheck';
+
 export default function Dashboard() {
   return (
     <div className="p-6 space-y-4">
